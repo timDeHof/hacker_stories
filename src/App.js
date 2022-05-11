@@ -1,6 +1,7 @@
-import logo from "./logo.svg";
+import { computeHeadingLevel } from "@testing-library/react";
+import { useState } from "react";
 import "./App.css";
-const list = [
+const stories = [
   {
     title: "React",
     url: "http://reactjs.org/",
@@ -18,41 +19,57 @@ const list = [
     objectID: 1,
   },
 ];
-
+const handleSearch = (event) => {
+  console.log(event.target.value);
+};
 const App = () => {
+  console.log("app renders");
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <Search />
+      <Search onSearch={handleSearch} />
       <hr />
-      <List />
+      <List list={stories} />
     </div>
   );
 };
-const Search = () => {
+const Search = (props) => {
+  console.log("search renders");
+  const [searchTerm, setSearchTerm] = useState("");
+  const handleChange = (event) => {
+    setSearchTerm(event.target.value);
+    props.onSearch(event);
+  };
+
   return (
     <>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" />
+      <input id="search" type="text" onChange={handleChange} />
+
+      <p>
+        Searching for <strong>{searchTerm}</strong>
+      </p>
     </>
   );
 };
 
-const List = () => {
-  return (
-    <ul>
-      {list.map((item) => (
-        <li key={item.objectID}>
-          <span>
-            <a href={item.url}>{item.title}</a>
-          </span>
-          <span>{item.author}</span>
-          <span>{item.num_comments}</span>
-          <span>{item.points}</span>
-        </li>
-      ))}
-    </ul>
-  );
-};
+const List = (props) => (
+  <ul>
+    {props.list.map((item) => (
+      <Item key={item.objectID} item={item} />
+    ))}
+  </ul>
+);
+
+const Item = (props) => (
+  <li>
+    <span>
+      <a href={props.item.url}>{props.item.title}</a>
+    </span>
+    <span>{props.item.author}</span>
+    <span>{props.item.num_comments}</span>
+    <span>{props.item.points}</span>
+  </li>
+);
 
 export default App;
